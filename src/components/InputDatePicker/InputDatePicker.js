@@ -1,10 +1,21 @@
 import React from 'react'
 import PropTypes from 'prop-types'
-import DatePicker from './DatePicker'
+import DateView from './DateView'
+import styled from 'styled-components'
+import { neutral, spacing } from '../../utils'
+
+const Picker = styled.div`
+  width: 29rem;
+  height: 35rem;
+  padding: ${spacing.padding.normal};
+  border: solid .1rem ${neutral[300]}
+`
 
 function InputDatePicker(props) {
   return (
-    <DatePicker calendar={{year: 2021, monthIndex: 3}} selectedDate={new Date(2021, 3, 23)} />
+    <Picker>
+      <DateView />
+    </Picker>
   )
 }
 
