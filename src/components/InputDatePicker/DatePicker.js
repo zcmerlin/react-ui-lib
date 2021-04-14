@@ -6,6 +6,7 @@ import { TertiaryButton } from '../Button'
 import styled, { css } from 'styled-components'
 import { defaultTheme, neutral, spacing } from '../../utils'
 import { tint } from 'polished'
+import { selectedStyle } from './mixin'
 
 const CalendarTable = styled.table`
   position: relative;
@@ -49,12 +50,7 @@ const CalendarDay = styled(TertiaryButton)`
     css`
       opacity: .5;
     `}
-  ${props => 
-    props.isSelected && css`
-      background-color: ${defaultTheme.primaryColor};
-      color: ${defaultTheme.textColorInverted}
-    `
-  }
+  ${selectedStyle}
 `
 
 function DatePicker(props) {
