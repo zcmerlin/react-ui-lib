@@ -15,7 +15,7 @@ const Picker = styled.div`
 `
 
 function Calendar(props) {
-  const [isDateView, setDateView] = useState(true)
+  const [isDateView, setDateView] = useState(false)
   const today = new Date();
   const initialCalendar = {
     year: getYear(today),
@@ -25,14 +25,24 @@ function Calendar(props) {
   function onSelectMonth(selectedMonthIndex) {
     setCalendar({...calendar, monthIndex: selectedMonthIndex})
   }
+  function onSelectYear(selectedYear) {
+    setCalendar({...calendar, year: selectedYear})
+  }
   const onSetMonthYearView = setDateView.bind(null, false)
   const onSetDateView = setDateView.bind(null, true)
   return (
     <Picker>
       {isDateView ? (
-        <DateView calendar={calendar} onSelectMonthYear={setCalendar} onTitleClick={onSetMonthYearView} />
+        <DateView
+          calendar={calendar}
+          onSelectMonthYear={setCalendar}
+          onTitleClick={onSetMonthYearView} />
       ) : (
-        <MonthYearView calendar={calendar} onSelectMonth={onSelectMonth} onBackClick={onSetDateView} />
+        <MonthYearView
+          calendar={calendar}
+          onSelectMonth={onSelectMonth}
+          onSelectYear={onSelectYear}
+          onBackClick={onSetDateView} />
       )}
     </Picker>
   )
