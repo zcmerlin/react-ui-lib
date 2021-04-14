@@ -15,6 +15,7 @@ const Picker = styled.div`
 `
 
 function Calendar(props) {
+  const {selectedDate, onSelectDate} = props
   const [isDateView, setDateView] = useState(true)
   const calendarRef = useRef(null)
   const today = new Date();
@@ -42,7 +43,9 @@ function Calendar(props) {
         <DateView
           calendar={calendar}
           onSelectMonthYear={setCalendar}
-          onTitleClick={onSetMonthYearView} />
+          onTitleClick={onSetMonthYearView}
+          selectedDate={selectedDate}
+          onSelectDate={onSelectDate} />
       ) : (
         <MonthYearView
           calendar={calendar}
@@ -55,7 +58,8 @@ function Calendar(props) {
 }
 
 Calendar.propTypes = {
-    
+  selectedDate: PropTypes.instanceOf(Date),
+  onSelectDate: PropTypes.func
 }
 
 export default Calendar

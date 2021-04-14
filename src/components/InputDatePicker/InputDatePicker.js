@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
 import PropTypes from 'prop-types'
-import Calendar from './Calendar'
 import FocusManager from './FocusManager'
+import DateManager from './DateManager'
+import Picker from './Picker'
 
 function InputDatePicker(props) {
   const [showPicker, setShowPicker] = useState(false)
@@ -14,13 +15,15 @@ function InputDatePicker(props) {
     closePicker()
   }
   return <FocusManager onFocus={onFocus} onBlur={onBlur}>
-    <input />
-    {showPicker && <Calendar />}
+    <DateManager onChange={props.onChange}>
+      <input />
+      {showPicker && <Picker />}
+    </DateManager>
   </FocusManager>
 }
 
 InputDatePicker.propTypes = {
-
+  onChange: PropTypes.func
 }
 
 export default InputDatePicker
