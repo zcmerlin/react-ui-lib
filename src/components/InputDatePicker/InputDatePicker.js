@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import FocusManager from './FocusManager'
 import DateManager from './DateManager'
 import Picker from './Picker'
+import Input from './Input'
 
 function InputDatePicker(props) {
   const [showPicker, setShowPicker] = useState(false)
@@ -16,7 +17,7 @@ function InputDatePicker(props) {
   }
   return <FocusManager onFocus={onFocus} onBlur={onBlur}>
     <DateManager onChange={props.onChange}>
-      <input />
+      <Input />
       {showPicker && <Picker />}
     </DateManager>
   </FocusManager>
