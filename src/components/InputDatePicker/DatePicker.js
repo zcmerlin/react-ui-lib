@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useRef } from 'react'
 import PropTypes from 'prop-types'
 import { buildDayNames, buildWeeks } from './generator'
 import { getDate, getMonth, isToday as dateFnsIsToday, isSameDay } from 'date-fns'
@@ -7,6 +7,7 @@ import styled, { css } from 'styled-components'
 import { defaultTheme, neutral, spacing } from '../../utils'
 import { tint } from 'polished'
 import { selectedStyle } from './mixin'
+import withCalendarGesture from './withCalendarGesture'
 
 const CalendarTable = styled.table`
   position: relative;
@@ -17,13 +18,13 @@ const CalendarHeader = styled.tr`
   &:after {
     content: '';
     width: 100%;
-    border-bottom: .1rem solid ${neutral[300]};
+    border-bottom: 0.1rem solid ${neutral[300]};
     position: absolute;
     left: 0;
     top: 2.3rem;
   }
   th {
-    padding-bottom: ${spacing.padding.small}
+    padding-bottom: ${spacing.padding.small};
   }
 `
 
@@ -39,16 +40,16 @@ const CalendarDay = styled(TertiaryButton)`
   padding: 0;
   border: none;
   border-radius: 50%;
-  ${props => 
-    props.isToday && 
+  ${(props) =>
+    props.isToday &&
     css`
       background-color: ${tint(0.9, defaultTheme.primaryColor)};
-      border: .1rem solid ${defaultTheme.primaryColor}
+      border: 0.1rem solid ${defaultTheme.primaryColor};
     `}
-  ${props => 
-    !props.isCurrentMonth && 
+  ${(props) =>
+    !props.isCurrentMonth &&
     css`
-      opacity: .5;
+      opacity: 0.5;
     `}
   ${selectedStyle}
 `
@@ -56,40 +57,53 @@ const CalendarDay = styled(TertiaryButton)`
 function DatePicker(props) {
   const { selectedDate, calendar, onSelectDate } = props
   const { year, monthIndex } = calendar
-  
+  const calendarRef = useRef(null)
+
   const weeks = useMemo(() => buildWeeks(year, monthIndex), [year, monthIndex])
   const dayNames = useMemo(() => buildDayNames(0), [])
 
   return (
-    <CalendarTable>
+    <CalendarTable ref={calendarRef}>
       <thead>
         <CalendarHeader>
-          {dayNames.map((dayName, i) => <th key={i}>{dayName}</th>)}
+          {dayNames.map((dayName, i) => (
+            <th key={i}>{dayName}</th>
+          ))}
         </CalendarHeader>
       </thead>
       <tbody>
-        {
-          weeks.map((week, i) => (
-            <CalendarRow key={i}>
-              {
-                week.map((day, j) => {
-                  const isToday = dateFnsIsToday(day)
-                  const isCurrentMonth = getMonth(day) === monthIndex
-                  const isSelected = isSameDay(day, selectedDate)
-                  return <td key={j}>
-                      <CalendarDay
-                        isToday={isToday}
-                        isCurrentMonth={isCurrentMonth}
-                        isSelected={isSelected}
-                        onClick={e => onSelectDate(e, day)}
-                      >
-                        {getDate(day)}
-                      </CalendarDay>
-                  </td>
-                })
+        {weeks.map((week, i) => (
+          <CalendarRow key={i}>
+            {week.map((day, j) => {
+              const isToday = dateFnsIsToday(day)
+              const isCurrentMonth = getMonth(day) === monthIndex
+              const isSelected = isSameDay(day, selectedDate)
+              // aria-current aria-*
+              const buttonProps = {}
+              const date = getDate(day)
+              if (isSelected) {
+                buttonProps['aria-current'] = 'date'
               }
-            </CalendarRow>
-          ))}
+              if (isCurrentMonth) {
+                buttonProps['data-value'] = date
+              }
+              return (
+                <td key={j}>
+                  <CalendarDay
+                    isToday={isToday}
+                    isCurrentMonth={isCurrentMonth}
+                    isSelected={isSelected}
+                    onClick={(e) => onSelectDate(e, day)}
+                    onKeyDown={(e) => props.onKeyDown(e, calendarRef.current, date - 1)}
+                    {...buttonProps}
+                  >
+                    {date}
+                  </CalendarDay>
+                </td>
+              )
+            })}
+          </CalendarRow>
+        ))}
       </tbody>
     </CalendarTable>
   )
@@ -98,11 +112,10 @@ function DatePicker(props) {
 DatePicker.propTypes = {
   calendar: PropTypes.shape({
     year: PropTypes.number,
-    monthIndex: PropTypes.number
+    monthIndex: PropTypes.number,
   }),
   selectedDate: PropTypes.instanceOf(Date),
-  onSelectDate: PropTypes.func
+  onSelectDate: PropTypes.func,
 }
 
-export default DatePicker
-
+export default withCalendarGesture(DatePicker)
